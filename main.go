@@ -13,10 +13,15 @@ type item struct {
 
 func main() {
 	c := colly.NewCollector()
-	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+	userAgent := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15"
 
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("visitinf")
+		// fmt.Println("visitinf")
+		r.Headers.Set("User-Agent", userAgent)
+	})
+
+	c.OnResponse(func(r *colly.Response) {
+		fmt.Println(r.Request.Headers.Get("User-Agent"))
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
@@ -24,12 +29,19 @@ func main() {
 	})
 
 	c.OnHTML("div", func(e *colly.HTMLElement) {
-		fmt.Print("%v", e)
-		currentPrice := e.ChildText("span.w_iUH7")
+		// fmt.Print("%v", e)
+		// // currentPrice := e.ChildText("span.w_iUH7")
 
-		fmt.Println(currentPrice)
+		fmt.Println(e.Text)
 	})
 
-	c.Visit("https://www.walmart.com/search?q=banana")
+	c.OnHTML("a[automation-id^=\"productDescriptionLink_\"]", func(e *colly.HTMLElement) {
+		// fmt.Print("%v", e)
+		// currentPrice := e.ChildText("span.w_iUH7")
+
+		fmt.Println(e.Text)
+	})
+
+	c.Visit("https://www.costco.com/CatalogSearch?dept=All&keyword=rice")
 
 }
